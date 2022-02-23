@@ -247,6 +247,12 @@ class TestFormulaParser(unittest.TestCase):
         _test_equation(equation="( ( 200 ) / 1 )(-(-1))", variables={"a1": [1]}, answer=[200])
         _test_equation(equation="10 - ( 200 / 1 )", variables={"a1": [1]}, answer=[-190])
         _test_equation(equation="(10 * -10) - ( 200 / 1 )", variables={"a1": [1]}, answer=[-300])
+        _test_equation(equation="1 / -a1", variables={"a1": [5]}, answer=[-1 / 5])
+        _test_equation(equation="-1 / -a1", variables={"a1": [5]}, answer=[1 / 5])
+        _test_equation(equation="(a1 / a1) - a1", variables={"a1": [5]}, answer=[-4])
+        _test_equation(equation="a1 / a1 - a1", variables={"a1": [5]}, answer=[-4])
+        _test_equation(equation="-a1 (a1) -a1", variables={"a1": [5]}, answer=[-30])
+
 
 
 if __name__ == "__main__":
