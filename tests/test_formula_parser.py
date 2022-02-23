@@ -13,7 +13,7 @@ def _test_equation(
     p = Parser(debug=True)
     func = p.parse(equation)["result"]
     result = func(variable_tensors)
-    assert (torch.abs(result - torch.tensor(answer)) < 0.000001).all()
+    assert (torch.abs(result - torch.tensor(answer)) < 0.000001).all(), f"{result} != {answer}"
 
 
 class TestFormulaParser(unittest.TestCase):
@@ -237,6 +237,16 @@ class TestFormulaParser(unittest.TestCase):
         _test_equation(equation="SQRT(4(4))", variables={"a1": [1]}, answer=[4])
         _test_equation(equation="4(SQRT(4(4)))", variables={"a1": [1]}, answer=[16])
         _test_equation(equation="SQRT(4(SQRT(4(4))))", variables={"a1": [1]}, answer=[4])
+
+
+        _test_equation(equation="( 200 / 1 ) - 1", variables={"a1": [1]}, answer=[199])
+        _test_equation(equation="( ( 200 ) / 1 ) - 1", variables={"a1": [1]}, answer=[199])
+        _test_equation(equation="( ( 200 ) / 1 ) - (1)", variables={"a1": [1]}, answer=[199])
+        _test_equation(equation="( ( 200 ) / 1 ) - (-1)", variables={"a1": [1]}, answer=[201])
+        _test_equation(equation="( ( 200 ) / 1 )(-1)", variables={"a1": [1]}, answer=[-200])
+        _test_equation(equation="( ( 200 ) / 1 )(-(-1))", variables={"a1": [1]}, answer=[200])
+        _test_equation(equation="10 - ( 200 / 1 )", variables={"a1": [1]}, answer=[-190])
+        _test_equation(equation="(10 * -10) - ( 200 / 1 )", variables={"a1": [1]}, answer=[-300])
 
 
 if __name__ == "__main__":
