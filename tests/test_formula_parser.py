@@ -253,6 +253,13 @@ class TestFormulaParser(unittest.TestCase):
         _test_equation(equation="a1 / a1 - a1", variables={"a1": [5]}, answer=[-4])
         _test_equation(equation="-a1 (a1) -a1", variables={"a1": [5]}, answer=[-30])
 
+    def test_decimal(self):
+        _test_equation(equation=".99", variables={"a1": [1]}, answer=[.99])
+        _test_equation(equation="a1/.99", variables={"a1": [1]}, answer=[1 / .99])
+        _test_equation(equation="a1/.99", variables={"a1": [1]}, answer=[1/.99])
+        _test_equation(equation="a1/0.99", variables={"a1": [1]}, answer=[1/.99])
+        _test_equation(equation="a1 + .9+.9", variables={"a1": [1]}, answer=[1 + .9 + .9])
+        _test_equation(equation="a1 + .009/.099*.009 - a1", variables={"a1": [1]}, answer=[1 + .009/.099*.009 - 1])
 
 
 if __name__ == "__main__":
