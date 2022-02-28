@@ -124,8 +124,12 @@ class FormulaParser(Parser):
                    | NUMBER DECIMAL
                    | NUMBER DECIMAL NUMBER
                    | NUMBER PERCENT
+                   | DECIMAL NUMBER
         """
-        if len(p) == 2:
+        if p[1] == '.' and len(p) == 3:
+            p2 = p[2]
+            p[0] = lambda args: to_number('.' + p2)
+        elif len(p) == 2:
             p[0] = lambda args, p1=p[1]: to_number(p1)
         elif p[2] == '.':
             if len(p) == 4:
