@@ -119,7 +119,7 @@ def TAN(number):
     number = utils.parse_number(number)
     if isinstance(number, error.XLError):
         return number
-    return math.tan(number)
+    return torch.tan(torch.tensor(number))
 
 
 @dispatcher.register_for("TANH")
@@ -241,14 +241,6 @@ def SUM(*args):
 def SUMIF(args, criteria):
     predicate = utils.parse_criteria(criteria)
     return sum(a for a in utils.iflatten(args) if predicate(a))
-
-
-@dispatcher.register_for("TAN")
-def TAN(number):
-    number = utils.parse_number(number)
-    if isinstance(number, error.XLError):
-        return number
-    return torch.tan(torch.tensor(number))
 
 
 @dispatcher.register_for("CEILING", "CEILING.MATH", "CEILING.PRECISE")
