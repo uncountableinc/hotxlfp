@@ -76,9 +76,6 @@ class FormulaParser(Parser):
         """
         expression : expression PLUS expression
                   | expression MINUS expression
-                  | expression_paren MINUS expression_paren
-                  | expression MINUS expression_paren
-                  | expression_paren MINUS expression
                   | expression MULT expression
                   | expression DIV expression
                   | expression AMP expression
