@@ -53,7 +53,7 @@ class Parser(object):
                   tabmodule=self.tabmodule)
 
     def parse(self, input):
-        return yacc.parse(input)
+        return yacc.parse(input)  # add debug=True for testing
 
     def run(self):
         while 1:
@@ -76,9 +76,21 @@ class FormulaParser(Parser):
         """
         expression : expression PLUS expression
                   | expression MINUS expression
+                  | expression_paren MINUS expression_paren
+                  | expression MINUS expression_paren
+                  | expression_paren MINUS expression
+                  | expression_paren MULT expression_paren
                   | expression MULT expression
+                  | expression_paren MULT expression
+                  | expression MULT expression_paren
+                  | expression_paren DIV expression_paren
+                  | expression_paren DIV expression
+                  | expression DIV expression_paren
                   | expression DIV expression
                   | expression AMP expression
+                  | expression_paren CARET expression_paren
+                  | expression_paren CARET expression
+                  | expression CARET expression_paren
                   | expression CARET expression
         """
         if p[2] == '&':
