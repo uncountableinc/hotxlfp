@@ -339,6 +339,19 @@ class TestFormulaParser(unittest.TestCase):
             answer=[1 + 0.009 / 0.099 * 0.009 - 1],
         )
 
+    def test_order_of_operations(self):
+        _test_equation(equation="2^-2-1", variables={"a1": [1]}, answer=[-.75])
+        _test_equation(equation="(2^(-1))", variables={"a1": [1]}, answer=[0.5])
+        _test_equation(equation="((2^(-1))-1)", variables={"a1": [1]}, answer=[-0.5])
+        _test_equation(equation="2^2-1", variables={"a1": [1]}, answer=[3])
+        _test_equation(equation="2^((-1)-1)", variables={"a1": [1]}, answer=[0.25])
+        _test_equation(equation="2/((-1)-1)", variables={"a1": [1]}, answer=[-1])
+        _test_equation(equation="2*((-1)-1)", variables={"a1": [1]}, answer=[-4])
+        _test_equation(equation="2+((-1)-1)", variables={"a1": [1]}, answer=[0])
+        _test_equation(equation="(2^1-1)", variables={"a1": [1]}, answer=[1])
+        _test_equation(equation="(2^(-1)-1)", variables={"a1": [1]}, answer=[-0.5])
+        _test_equation(equation="1 + 2 * 3 - 4", variables={"a1": [1]}, answer=[3])
+
 
 if __name__ == "__main__":
     unittest.main()

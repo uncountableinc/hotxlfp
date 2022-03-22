@@ -25,7 +25,7 @@ OPERATOR_DICT = {
     "=": operator.eq,
     ">=": operator.ge,
     "<=": operator.le,
-    "^": lambda a, b: torch.pow(torch.tensor(a), torch.tensor(b)),
+    "^": lambda a, b: torch.float_power(torch.tensor(a), torch.tensor(b)),
 }
 
 REGEX_CRITERIA = re.compile(r'(?P<op>[\<\>\=]*)(?P<val>[\w\d\s\.\*\?]+)', re.UNICODE)
