@@ -1,4 +1,4 @@
-name: Python package - hotxlfp
+name: Lint & Test
 
 on: [push]
 
@@ -31,4 +31,7 @@ jobs:
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics || true
       - name: Test with pytest
         run: |
+          echo "CURRENT WORKING DIRECTORY PWD=$PWD"
+          ls -alh
+          export PYTHONPATH="."
           just test
