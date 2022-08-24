@@ -154,7 +154,7 @@ class FormulaParser(Parser):
         """
         expression : STRING
         """
-        p[0] = lambda args: p[1][1:-1]
+        p[0] = lambda args, p1=p[1]: p1[1:-1]
 
     def p_expression_function(self, p):
         """
