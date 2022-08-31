@@ -7,3 +7,5 @@ install-python-deps:
 
 test:
   python -m pytest tests/test_formula_parser.py
+  python -m pytest tests/test_text.py
+
