@@ -17,10 +17,27 @@ def AND(*args):
 
 @dispatcher.register_for('IF')
 def IF(test, then, otherwise):
+    if isinstance(test, error.XLError):
+        return error.XLError
+    test_condition = torch.tensor(test, dtype=torch.bool)
+    if test_condition.all():
+        if isinstance(then, error.XLError):
+            return then
+        return torch.tensor(then, dtype=torch.double)
+    elif (~test_condition).all():
+        if isinstance(otherwise, error.XLError):
+            return otherwise
+        return torch.tensor(otherwise, dtype=torch.double)
+
+    if isinstance(then, error.XLError):
+        return then
+    if isinstance(otherwise, error.XLError):
+        return otherwise
+        
     return torch.where(
-        torch.tensor(test, dtype=torch.bool),
+        test_condition,
         torch.tensor(then, dtype=torch.double),
-        torch.tensor(otherwise, dtype=torch.double)
+        torch.tensor(otherwise, dtype=torch.double),
     )
 
 
