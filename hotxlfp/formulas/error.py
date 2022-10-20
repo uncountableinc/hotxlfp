@@ -6,8 +6,11 @@ Defines Excel errors as python exceptions
 class XLError(RuntimeError):
     pass
 
+class ComputationValueError(XLError):
+    pass
+
 ERROR = XLError('#ERROR!')
-DIV_ZERO = XLError('#DIV/0!')
+DIV_ZERO = ComputationValueError("#DIV/0!")
 NAME = XLError('#NAME?')
 NOT_AVAILABLE = XLError('#N/A')
 NULL = XLError('#NULL!')
