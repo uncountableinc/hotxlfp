@@ -6,6 +6,7 @@ import re
 tokens = (
     'STRING',
     'FUNCTION',
+    'FUNCTION_3ARGS',
     'XLERROR',
     'ABSOLUTE_CELL',
     'MIXED_CELL',
@@ -46,14 +47,25 @@ def t_STRING(t):
     r'"(\\["]|[^"])*"|\'(\\[\']|[^\'])*\''
     return t
 
-
 available_functions = dispatcher._registry_.keys()
-function_options = '|'.join(f'({re.escape(function)})' for function in available_functions)
-lookahead = '(?=\s*[(])'
-function_regex = f"({function_options}){lookahead}"
+fixed_argument_functions_mapping = {
+    3: ["IF"]
+}
+fixed_argument_functions = {function for functions in fixed_argument_functions_mapping.values() for function in functions}
+fixed_argument_functions_mapping[None] = [function for function in available_functions if function not in fixed_argument_functions]
 
-@lex.TOKEN(function_regex)
+def _build_n_args_function_regex(num_arguments):
+    function_options = '|'.join(
+        f'({re.escape(function)})' for function in fixed_argument_functions_mapping[num_arguments])
+    lookahead = '(?=\s*[(])'
+    return f"({function_options}){lookahead}"
+
+@lex.TOKEN(_build_n_args_function_regex(None))
 def t_FUNCTION(t):
+    return t
+
+@lex.TOKEN(_build_n_args_function_regex(3))
+def t_FUNCTION_3ARGS(t):
     return t
 
 

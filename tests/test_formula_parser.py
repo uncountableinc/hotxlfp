@@ -1,5 +1,6 @@
 import unittest
 
+from hotxlfp import error
 import torch
 from hotxlfp import Parser
 from math import pi
@@ -8,12 +9,17 @@ from math import pi
 def _test_equation(
     equation,
     variables,
-    answer,
+    answer=None,
+    should_fail=False,
 ):
     variable_tensors = {name: torch.tensor(value) for name, value in variables.items()}
     p = Parser(debug=True)
-    func = p.parse(equation)["result"]
-    result = func(variable_tensors)
+    try:
+        func = p.parse(equation)["result"]
+        result = func(variable_tensors)
+    except (error.XLError, TypeError):
+        assert should_fail
+        return
     assert (
         torch.abs(result - torch.tensor(answer)) < 0.000001
     ).all(), f"{result} != {answer}"
@@ -351,6 +357,14 @@ class TestFormulaParser(unittest.TestCase):
         _test_equation(equation="(2^1-1)", variables={"a1": [1]}, answer=[1])
         _test_equation(equation="(2^(-1)-1)", variables={"a1": [1]}, answer=[-0.5])
         _test_equation(equation="1 + 2 * 3 - 4", variables={"a1": [1]}, answer=[3])
+
+    def test_if_statement_args(self):
+        _test_equation(equation="IF(a1 > 10, 1, 100, 400)", variables={"a1": [4]}, should_fail=True)
+        _test_equation(equation="IF(a1 > 10, 400)", variables={"a1": [4]}, should_fail=True)
+        _test_equation(equation="IF(a1 > 10, )", variables={"a1": [4]}, should_fail=True)
+        _test_equation(equation="IF(,, )", variables={"a1": [4]}, should_fail=True)
+        _test_equation(equation="IF(a1 > 100, 40, IF(a1 > 1, 4, 56))", variables={"a1": [40]}, answer=[4])
+        _test_equation(equation="IF(a1 > 10, 40, IF(a1 > 10, 4))", variables={"a1": [4]}, should_fail=True)
 
 
 if __name__ == "__main__":
