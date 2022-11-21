@@ -170,6 +170,11 @@ class FormulaParser(Parser):
         """
         p[0] = lambda args, p1=p[1], p3=p[3]: self.call_function(p1, p3(args))
 
+    def p_expression_3args(self, p):
+        """
+        expression : FUNCTION_3ARGS LPAREN expression COMMA expression COMMA expression RPAREN
+        """
+        p[0] = lambda args, p1=p[1], p3=p[3], p5=p[5], p7=p[7]: self.call_function(p1, [p3(args), p5(args), p7(args)])
 
     # TODO: This function is not migrated yet
     def p_expression_array(self, p):
