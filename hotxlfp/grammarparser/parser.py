@@ -137,18 +137,18 @@ class FormulaParser(Parser):
         """
         if p[1] == '.' and len(p) == 3:
             p2 = p[2]
-            p[0] = lambda args: to_number('.' + p2)
+            p[0] = lambda args: to_number('.' + p2, args)
         elif len(p) == 2:
-            p[0] = lambda args, p1=p[1]: to_number(p1)
+            p[0] = lambda args, p1=p[1]: to_number(p1, args)
         elif p[2] == '.':
             if len(p) == 4:
-                p[0] = lambda args, p1=p[1], p3=p[3]: to_number(p1 + '.' + p3)
+                p[0] = lambda args, p1=p[1], p3=p[3]: to_number(p1 + '.' + p3, args)
             else:
-                p[0] = lambda args, p1=p[1]: to_number(p1)
+                p[0] = lambda args, p1=p[1]: to_number(p1, args)
         elif p[2] == '^':
-            p[0] = lambda args, p1=p[1], p3=p[3]: to_number(p1)**to_number(p3)
+            p[0] = lambda args, p1=p[1], p3=p[3]: to_number(p1, args)**to_number(p3, args)
         elif p[2] == '%':
-            p[0] = lambda args, p1=p[1]: to_number(p1) * 0.01
+            p[0] = lambda args, p1=p[1]: to_number(p1, args) * 0.01
 
     def p_expression_string(self, p):
         """

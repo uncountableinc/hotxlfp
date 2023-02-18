@@ -20,6 +20,7 @@ def _test_equation(
     except (error.XLError, TypeError):
         assert should_fail
         return
+    assert isinstance(result, torch.Tensor)
     assert (
         torch.abs(result - torch.tensor(answer)) < 0.000001
     ).all(), f"{result} != {answer}"
@@ -365,6 +366,15 @@ class TestFormulaParser(unittest.TestCase):
         _test_equation(equation="IF(,, )", variables={"a1": [4]}, should_fail=True)
         _test_equation(equation="IF(a1 > 100, 40, IF(a1 > 1, 4, 56))", variables={"a1": [40]}, answer=[4])
         _test_equation(equation="IF(a1 > 10, 40, IF(a1 > 10, 4))", variables={"a1": [4]}, should_fail=True)
+
+    def test_tensors(self):
+        _test_equation(equation="MIN(a1 * 2, 2, 23, a1)", variables={"a1": [5]}, answer=[2])
+        _test_equation(equation="MIN(2, a1 * 2)", variables={"a1": [5]}, answer=[2])
+        _test_equation(equation="MAX(a1 * 2, 2)", variables={"a1": [5]}, answer=[10])
+        _test_equation(equation="MAX(2, a1 * 2)", variables={"a1": [5]}, answer=[10])
+        _test_equation(equation="MAX(MAX(2, a1 * 2), 100)", variables={"a1": [5, 4]}, answer=[100, 100])
+        _test_equation(equation="5", variables={"a1": [5, 4]}, answer=[5])
+        _test_equation(equation="SQRT(100)", variables={"a1": [5]}, answer=[10])
 
 
 if __name__ == "__main__":
