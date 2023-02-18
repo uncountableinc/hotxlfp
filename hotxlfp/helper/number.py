@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import ipdb
 import torch
 
 from .._compat import number_types, string_types
