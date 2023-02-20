@@ -12,9 +12,31 @@ from ..helper.number import to_number
 import torch
 
 
+def _find_first_tensor(args) -> torch.Tensor | None:
+    for item in args:
+        if isinstance(item, torch.Tensor):
+            return item
+    return None
+
+# Broadcasts args so that if there is a numeric arg, and a tensor arg, that the numeric
+# arg will become a tensor of the same size as the numeric arg.
+def broadcast_args(args):
+    first_tensor = _find_first_tensor(args)
+    if first_tensor is None:
+        return args
+
+    new_args = []
+    for arg in args:
+        if isinstance(arg, torch.Tensor):
+            new_args.append(arg)
+        else:
+            new_args.append(torch.ones_like(first_tensor) * arg)
+    return new_args
+
+
 @dispatcher.register_for('AVERAGE')
 def AVERAGE(*args):
-    return torch.mean(torch.tensor(torch.stack(args, dim=0), dtype=torch.double), dim=0)
+    return torch.mean(torch.tensor(torch.stack(broadcast_args(args), dim=0), dtype=torch.double), dim=0)
 
 
 @dispatcher.register_for('AVEDEV')
@@ -71,7 +93,7 @@ def COUNTIF(args, criteria):
 
 @dispatcher.register_for('MAX')
 def MAX(*args):
-    tensors = [torch.tensor(val, dtype=torch.double) for val in args]
+    tensors = [torch.tensor(val, dtype=torch.double) for val in broadcast_args(args)]
     return torch.max(torch.tensor(torch.stack(tensors, dim=0), dtype=torch.double), dim=0).values
 
 
@@ -87,7 +109,7 @@ def MEDIAN(*args):
 
 @dispatcher.register_for('MIN')
 def MIN(*args):
-    tensors = [torch.tensor(val, dtype=torch.double) for val in args]
+    tensors = [torch.tensor(val, dtype=torch.double) for val in broadcast_args(args)]
     return torch.min(torch.tensor(torch.stack(tensors, dim=0), dtype=torch.double), dim=0).values
 
 

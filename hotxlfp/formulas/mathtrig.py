@@ -23,7 +23,7 @@ def ABS(number):
     number = utils.parse_number(number)
     if isinstance(number, error.XLError):
         return number
-    return abs(number)
+    return torch.abs(torch.tensor(number))
 
 
 @dispatcher.register_for("ACOS")
@@ -31,7 +31,7 @@ def ACOS(number):
     number = utils.parse_number(number)
     if isinstance(number, error.XLError):
         return number
-    return math.acos(number)
+    return torch.acos(torch.tensor(number))
 
 
 @dispatcher.register_for("ACOSH")
@@ -39,7 +39,7 @@ def ACOSH(number):
     number = utils.parse_number(number)
     if isinstance(number, error.XLError):
         return number
-    return math.log(number + math.sqrt(number * number - 1))
+    return torch.log(torch.tensor(number) + torch.sqrt(torch.tensor(number) * torch.tensor(number) - 1))
 
 
 @dispatcher.register_for("ACOT")
@@ -47,7 +47,7 @@ def ACOT(number):
     number = utils.parse_number(number)
     if isinstance(number, error.XLError):
         return number
-    return math.atan(1 / number)
+    return torch.atan(1 / torch.tensor(number))
 
 
 @dispatcher.register_for("ACOTH")
@@ -55,7 +55,7 @@ def ACOTH(number):
     number = utils.parse_number(number)
     if isinstance(number, error.XLError):
         return number
-    return 0.5 * math.log((number + 1) / (number - 1))
+    return 0.5 * torch.log((torch.tensor(number) + 1) / torch.tensor(number) - 1)
 
 
 @dispatcher.register_for("SIN")
@@ -63,7 +63,7 @@ def SIN(number):
     number = utils.parse_number(number)
     if isinstance(number, error.XLError):
         return number
-    return math.sin(number)
+    return torch.sin(torch.tensor(number))
 
 
 @dispatcher.register_for("SINH")
@@ -71,7 +71,7 @@ def SINH(number):
     number = utils.parse_number(number)
     if isinstance(number, error.XLError):
         return number
-    return math.sinh(number)
+    return torch.sinh(torch.tensor(number))
 
 
 @dispatcher.register_for("ASIN")
@@ -79,7 +79,7 @@ def ASIN(number):
     number = utils.parse_number(number)
     if isinstance(number, error.XLError):
         return number
-    return math.asin(number)
+    return torch.asin(torch.tensor(number))
 
 
 @dispatcher.register_for("ASINH")
@@ -87,7 +87,7 @@ def ASINH(number):
     number = utils.parse_number(number)
     if isinstance(number, error.XLError):
         return number
-    return math.asinh(number)
+    return torch.asinh(torch.tensor(number))
 
 
 @dispatcher.register_for("COS")
@@ -95,7 +95,7 @@ def COS(number):
     number = utils.parse_number(number)
     if isinstance(number, error.XLError):
         return number
-    return math.cos(number)
+    return torch.cos(torch.tensor(number))
 
 
 @dispatcher.register_for("COSH")
@@ -103,7 +103,7 @@ def COSH(number):
     number = utils.parse_number(number)
     if isinstance(number, error.XLError):
         return number
-    return math.cosh(number)
+    return torch.cosh(torch.tensor(number))
 
 
 @dispatcher.register_for("COT")
@@ -111,7 +111,7 @@ def COT(number):
     number = utils.parse_number(number)
     if isinstance(number, error.XLError):
         return number
-    return math.cos(number) / math.sin(number)
+    return torch.cos(torch.tensor(number)) / torch.sin(torch.tensor(number))
 
 
 @dispatcher.register_for("TAN")
@@ -127,7 +127,7 @@ def TANH(number):
     number = utils.parse_number(number)
     if isinstance(number, error.XLError):
         return number
-    return math.tanh(number)
+    return torch.tanh(torch.tensor(number))
 
 
 @dispatcher.register_for("ATAN")
@@ -135,7 +135,7 @@ def ATAN(number):
     number = utils.parse_number(number)
     if isinstance(number, error.XLError):
         return number
-    return math.atan(number)
+    return torch.atan(torch.tensor(number))
 
 
 @dispatcher.register_for("ATAN2")
@@ -146,7 +146,7 @@ def ATAN2(x_num, y_num):
     y_num = utils.parse_number(x_num)
     if isinstance(y_num, error.XLError):
         return y_num
-    return math.atan2(x_num, y_num)
+    return torch.atan2(torch.tensor(x_num), torch.tensor(y_num))
 
 
 @dispatcher.register_for("ATANH")
@@ -154,7 +154,7 @@ def ATANH(number):
     number = utils.parse_number(number)
     if isinstance(number, error.XLError):
         return number
-    return math.atanh(number)
+    return torch.atanh(torch.tensor(number))
 
 
 @dispatcher.register_for("SQRT")
@@ -162,7 +162,7 @@ def SQRT(number):
     number = utils.parse_number(number)
     if isinstance(number, error.XLError):
         return number
-    return math.sqrt(number)
+    return torch.sqrt(torch.tensor(number))
 
 
 @dispatcher.register_for("EXP")
@@ -170,7 +170,7 @@ def EXP(number):
     number = utils.parse_number(number)
     if isinstance(number, error.XLError):
         return number
-    return math.e**number
+    return torch.exp(torch.tensor(number))
 
 
 @dispatcher.register_for("LN")
@@ -200,7 +200,7 @@ def LOG10(number):
 
 @dispatcher.register_for("PI")
 def PI():
-    return math.pi
+    return torch.tensor(math.pi)
 
 
 @dispatcher.register_for("ROUND")
