@@ -17,7 +17,7 @@ def _test_equation(
     try:
         func = p.parse(equation)["result"]
         result = func(variable_tensors)
-    except (error.XLError, TypeError) as e:
+    except (error.XLError, TypeError):
         assert should_fail
         return
     assert isinstance(result, torch.Tensor)
