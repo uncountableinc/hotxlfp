@@ -23,10 +23,10 @@ class Parser(object):
         ('left', 'PLUS', 'MINUS'),
         ('left', 'MULT', 'DIV'),
         ('left', 'CARET'),
-        ('left', 'SCIENTIFIC_NOTATION_E'),
         ('left', 'AMP'),
         ('left', 'PERCENT'),
-        ('left', 'UMINUS')
+        ('left', 'UMINUS'),
+        ('left', 'SCIENTIFIC_NOTATION_E'),
     )
 
     def __init__(self, debug=False, call_function=None, call_variable=None,
@@ -130,7 +130,7 @@ class FormulaParser(Parser):
 
     def p_expression_decimal_number(self, p):
         """
-        expression : NUMBER
+        expression_decimal_number : NUMBER
                    | NUMBER DECIMAL
                    | NUMBER DECIMAL NUMBER
                    | DECIMAL NUMBER
