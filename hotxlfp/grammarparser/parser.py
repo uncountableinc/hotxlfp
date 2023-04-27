@@ -25,7 +25,8 @@ class Parser(object):
         ('left', 'CARET'),
         ('left', 'AMP'),
         ('left', 'PERCENT'),
-        ('left', 'UMINUS')
+        ('left', 'UMINUS'),
+        ('left', 'SCIENTIFIC_NOTATION_E'),
     )
 
     def __init__(self, debug=False, call_function=None, call_variable=None,
@@ -127,12 +128,11 @@ class FormulaParser(Parser):
         p2 = p[2]
         p[0] = lambda args: -p2(args)
 
-    def p_expression_number(self, p):
+    def p_expression_decimal_number(self, p):
         """
-        expression : NUMBER
+        expression_decimal_number : NUMBER
                    | NUMBER DECIMAL
                    | NUMBER DECIMAL NUMBER
-                   | NUMBER PERCENT
                    | DECIMAL NUMBER
         """
         if p[1] == '.' and len(p) == 3:
@@ -147,8 +147,19 @@ class FormulaParser(Parser):
                 p[0] = lambda args, p1=p[1]: to_number(p1, args)
         elif p[2] == '^':
             p[0] = lambda args, p1=p[1], p3=p[3]: to_number(p1, args)**to_number(p3, args)
-        elif p[2] == '%':
+
+    def p_expression_number(self, p):
+        """
+        expression : expression_decimal_number
+                   | expression_decimal_number PERCENT
+                   | expression_decimal_number SCIENTIFIC_NOTATION_E expression_decimal_number
+        """
+        if len(p) == 2:  # expression_decimal_number
+            p[0] = p[1]
+        elif len(p) == 3:  # expression_decimal_number PERCENT
             p[0] = lambda args, p1=p[1]: to_number(p1, args) * 0.01
+        if len(p) == 4:  # expression_decimal_number SCIENTIFIC_NOTATION_E expression_decimal_number
+            p[0] = lambda args, p1=p[1], p3=p[3]: p1(args) * (10 ** p3(args))
 
     def p_expression_string(self, p):
         """

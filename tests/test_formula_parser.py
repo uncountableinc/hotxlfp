@@ -375,6 +375,22 @@ class TestFormulaParser(unittest.TestCase):
         _test_equation(equation="MAX(MAX(2, a1 * 2), 100)", variables={"a1": [5, 4]}, answer=[100, 100])
         _test_equation(equation="5", variables={"a1": [5, 4]}, answer=[5])
         _test_equation(equation="SQRT(100)", variables={"a1": [5]}, answer=[10])
+        
+    def test_scientific_notation(self):
+        _test_equation(equation="2e2", variables={"a1" : [1.1]}, answer=[200])
+        _test_equation(equation="5(m)", variables={"m" : [10]}, answer=[50])
+        _test_equation(equation="5(e)", variables={"e" : [10]}, answer=[50])
+        _test_equation(equation="5(evar)", variables={"evar" : [10]}, answer=[50])
+        _test_equation(equation="5(vare)", variables={"vare" : [10]}, answer=[50])
+        _test_equation(equation="1 e 2", variables={"a1" : [1.1]}, answer=[100])
+        _test_equation(equation="1e2", variables={"a1" : [1.1]}, answer=[100])
+        _test_equation(equation="2*1e2", variables={"a1" : [1.1]}, answer=[200])
+        _test_equation(equation="2*1e2^3", variables={"a1" : [1.1]}, answer=[2000000])
+        _test_equation(equation="(2*1e2)^3", variables={"a1" : [1.1]}, answer=[8000000])
+        _test_equation(equation="(2)e(4)", variables={"a1" : [1.1]}, answer=[8000000], should_fail=True)
+        _test_equation(equation="(2)e(4)", variables={"a1" : [1.1]}, should_fail=True)
+        _test_equation(equation="0.2e2", variables={"a1" : [1.1]}, answer=20)
+        _test_equation(equation="0.2e0.2", variables={"a1" : [1.1]}, answer=0.2 * (10 ** 0.2))
 
 
 if __name__ == "__main__":

@@ -4,6 +4,7 @@ from ..formulas import error, dispatcher
 import re
 
 tokens = (
+    'SCIENTIFIC_NOTATION_E',
     'STRING',
     'FUNCTION',
     'FUNCTION_3ARGS',
@@ -36,6 +37,12 @@ tokens = (
     'EQUAL',
     'PERCENT',
 )
+
+
+
+def t_SCIENTIFIC_NOTATION_E(t):
+    r'(?<=\d)\s*e\s*(?=\d)'  # Lookahead to not confuse with variables and functions
+    return t
 
 
 def t_WHITESPACE(t):
