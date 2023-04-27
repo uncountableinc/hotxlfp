@@ -17,6 +17,7 @@ tokens = (
     'RBRACKET',
     'AMP',
     'DECIMAL',
+    'SCIENTIFIC_NOTATION_E',
     'COLON',
     'SEMICOLON',
     'COMMA',
@@ -121,6 +122,11 @@ def t_SINGLESPACE(t):
 
 def t_DECIMAL(t):
     r'\.'
+    return t
+
+
+def t_SCIENTIFIC_NOTATION_E(t):
+    r'e'
     return t
 
 

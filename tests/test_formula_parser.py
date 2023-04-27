@@ -375,6 +375,9 @@ class TestFormulaParser(unittest.TestCase):
         _test_equation(equation="MAX(MAX(2, a1 * 2), 100)", variables={"a1": [5, 4]}, answer=[100, 100])
         _test_equation(equation="5", variables={"a1": [5, 4]}, answer=[5])
         _test_equation(equation="SQRT(100)", variables={"a1": [5]}, answer=[10])
+        
+    def test_scientific_notation(self):
+        _test_equation(equation="2e2", variables={"a1" : [1]}, answer=[200])
 
 
 if __name__ == "__main__":
