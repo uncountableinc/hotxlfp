@@ -375,7 +375,7 @@ class TestFormulaParser(unittest.TestCase):
         _test_equation(equation="MAX(MAX(2, a1 * 2), 100)", variables={"a1": [5, 4]}, answer=[100, 100])
         _test_equation(equation="5", variables={"a1": [5, 4]}, answer=[5])
         _test_equation(equation="SQRT(100)", variables={"a1": [5]}, answer=[10])
-        
+
     def test_scientific_notation(self):
         _test_equation(equation="2e2", variables={"a1" : [1.1]}, answer=[200])
         _test_equation(equation="5(m)", variables={"m" : [10]}, answer=[50])
@@ -391,7 +391,10 @@ class TestFormulaParser(unittest.TestCase):
         _test_equation(equation="(2)e(4)", variables={"a1" : [1.1]}, should_fail=True)
         _test_equation(equation="0.2e2", variables={"a1" : [1.1]}, answer=20)
         _test_equation(equation="0.2e0.2", variables={"a1" : [1.1]}, answer=0.2 * (10 ** 0.2))
-
+        _test_equation(equation="2e-1", variables={"a1" : [1.1]}, answer=0.2)
+        _test_equation(equation="-2e1", variables={"a1" : [1.1]}, answer=-20)
+        _test_equation(equation="-2e-1", variables={"a1" : [1.1]}, answer=-0.2)
+        _test_equation(equation="-2e-.1", variables={"a1" : [1.1]}, answer=-2 * (10 ** (-.1)))
 
 if __name__ == "__main__":
     unittest.main()
