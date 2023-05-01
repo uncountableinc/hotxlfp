@@ -153,6 +153,7 @@ class FormulaParser(Parser):
         expression : expression_decimal_number
                    | expression_decimal_number PERCENT
                    | expression_decimal_number SCIENTIFIC_NOTATION_E expression_decimal_number
+                   | expression_decimal_number SCIENTIFIC_NOTATION_E MINUS expression_decimal_number
         """
         if len(p) == 2:  # expression_decimal_number
             p[0] = p[1]
@@ -160,6 +161,8 @@ class FormulaParser(Parser):
             p[0] = lambda args, p1=p[1]: to_number(p1, args) * 0.01
         if len(p) == 4:  # expression_decimal_number SCIENTIFIC_NOTATION_E expression_decimal_number
             p[0] = lambda args, p1=p[1], p3=p[3]: p1(args) * (10 ** p3(args))
+        if len(p) == 5:  # expression_decimal_number SCIENTIFIC_NOTATION_E MINUS expression_decimal_number
+            p[0] = lambda args, p1=p[1], p4=p[4]: p1(args) * (10 ** -p4(args))
 
     def p_expression_string(self, p):
         """

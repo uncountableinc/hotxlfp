@@ -41,7 +41,7 @@ tokens = (
 
 
 def t_SCIENTIFIC_NOTATION_E(t):
-    r'(?<=\d)\s*e\s*(?=\d)'  # Lookahead to not confuse with variables and functions
+    r'(?<=\d)\s*e\s*(?=\-?\s*?\.?\d)'  # Lookahead to not confuse with variables and functions
     return t
 
 
