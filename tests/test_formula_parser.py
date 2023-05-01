@@ -396,5 +396,11 @@ class TestFormulaParser(unittest.TestCase):
         _test_equation(equation="-2e-1", variables={"a1" : [1.1]}, answer=-0.2)
         _test_equation(equation="-2e-.1", variables={"a1" : [1.1]}, answer=-2 * (10 ** (-.1)))
 
+
+        _test_equation(equation="2E2", variables={"a1" : [1.1]}, answer=[200])
+        _test_equation(equation="2*1E2", variables={"a1" : [1.1]}, answer=[200])
+        _test_equation(equation="0.2E2", variables={"a1" : [1.1]}, answer=20)
+        _test_equation(equation="-2E-1", variables={"a1" : [1.1]}, answer=-0.2)
+
 if __name__ == "__main__":
     unittest.main()
