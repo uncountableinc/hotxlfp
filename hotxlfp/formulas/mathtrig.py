@@ -245,23 +245,36 @@ def SUMIF(args, criteria):
 
 @dispatcher.register_for("CEILING", "CEILING.MATH", "CEILING.PRECISE")
 def CEILING(number, significance=1):
-    number = utils.parse_number(number)
+    number = torch.tensor(utils.parse_number(number))
     significance = utils.parse_number(significance)
+    if not isinstance(significance, torch.Tensor) or significance.size(dim=0) == 1:
+        significance = torch.broadcast_to(torch.tensor(significance), number.size())
 
     if utils.any_is_error((number, significance)):
         return error.VALUE
-    if significance == 0:
-        return 0
+    if number.size(dim=0) != significance.size(dim=0):
+        return error.VALUE
 
-    positive_significance = significance > 0
-    significance = abs(significance)
-    if number >= 0:
-        return math.ceil(number / significance) * significance
-    else:
-        if positive_significance:
-            return -1 * math.floor(abs(number) / significance) * significance
-        else:
-            return -1 * math.ceil(abs(number) / significance) * significance
+    positive_number = torch.where(
+        (number >= 0) & (significance != 0),
+        torch.ceil(number / significance) * significance,
+        0,
+    )
+
+    positive_significance = torch.where(
+        (number < 0) & (significance > 0),
+        -1 * torch.floor(torch.abs(number) / significance) * significance,
+        0,
+    )
+
+    negative_significance = torch.where(
+        (number < 0) & (significance < 0),
+        -1 * torch.ceil(torch.abs(number) / significance) * significance,
+        0,
+    )
+
+    results = positive_number + positive_significance + negative_significance
+    return results
 
 
 @dispatcher.register_for("FLOOR", "FLOOR.MATH", "FLOOR.PRECISE")
