@@ -257,7 +257,7 @@ def CEILING(number, significance=1):
 
     positive_number = torch.where(
         (number >= 0) & (significance != 0),
-        torch.ceil(number / significance) * significance,
+        torch.ceil(number / abs(significance)) * abs(significance),
         0,
     )
 
@@ -269,7 +269,7 @@ def CEILING(number, significance=1):
 
     negative_significance = torch.where(
         (number < 0) & (significance < 0),
-        -1 * torch.ceil(torch.abs(number) / significance) * significance,
+        -1 * torch.ceil(torch.abs(number) / abs(significance)) * abs(significance),
         0,
     )
 
