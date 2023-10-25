@@ -245,14 +245,16 @@ def SUMIF(args, criteria):
 
 @dispatcher.register_for("CEILING", "CEILING.MATH", "CEILING.PRECISE")
 def CEILING(number, significance=1):
-    number = torch.tensor(utils.parse_number(number))
+    number = utils.parse_number(number)
     significance = utils.parse_number(significance)
-    if not isinstance(significance, torch.Tensor) or significance.size(dim=0) == 1:
+    if isinstance(number, torch.Tensor) and (not isinstance(significance, torch.Tensor) or significance.dim() == 0 or significance.size(dim=0) == 1):
         significance = torch.broadcast_to(torch.tensor(significance), number.size())
 
+    number = torch.tensor(number)
+    significance = torch.tensor(significance)
     if utils.any_is_error((number, significance)):
         return error.VALUE
-    if number.size(dim=0) != significance.size(dim=0):
+    if number.size() != significance.size():
         return error.VALUE
 
     positive_number = torch.where(
