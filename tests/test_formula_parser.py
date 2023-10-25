@@ -375,6 +375,10 @@ class TestFormulaParser(unittest.TestCase):
         _test_equation(equation="MAX(MAX(2, a1 * 2), 100)", variables={"a1": [5, 4]}, answer=[100, 100])
         _test_equation(equation="5", variables={"a1": [5, 4]}, answer=[5])
         _test_equation(equation="SQRT(100)", variables={"a1": [5]}, answer=[10])
+        _test_equation(equation="CEILING(a1)", variables={"a1": [4.5, -1.2]}, answer=[5, -1])
+        _test_equation(equation="CEILING(a1, a2)", variables={"a1": [0.5, 0.5], "a2": [1, 2]}, answer=[1, 2])
+        _test_equation(equation="CEILING(a1, a2)", variables={"a1": [0.5, 0.5], "a2": [2]}, answer=[2, 2])
+        _test_equation(equation="CEILING(a1, a2)", variables={"a1": [0.5], "a2": [1]}, answer=[1])
 
     def test_scientific_notation(self):
         _test_equation(equation="2e2", variables={"a1" : [1.1]}, answer=[200])
