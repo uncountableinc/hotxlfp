@@ -76,6 +76,9 @@ class ExcelComparator(object):
         if type(self.value) != type(other):
             other = self.convert_other(other)
         return self.value == other
+    
+    def __ne__(self, other):
+        return torch.logical_not(self.__eq__(other))
 
     def __ge__(self, other):
         return torch.logical_or(self.__gt__(other), self.__eq__(other))
