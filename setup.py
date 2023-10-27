@@ -5,7 +5,7 @@ from setuptools import setup
 
 setup(
     name="hotxlfp",
-    version="0.0.11+unc.28",
+    version="0.0.11+unc.29",
     packages=[
         "hotxlfp",
         "hotxlfp._compat",

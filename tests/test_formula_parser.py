@@ -379,6 +379,10 @@ class TestFormulaParser(unittest.TestCase):
         _test_equation(equation="CEILING(a1, a2)", variables={"a1": [0.5, 0.5], "a2": [1, 2]}, answer=[1, 2])
         _test_equation(equation="CEILING(a1, a2)", variables={"a1": [0.5, 0.5], "a2": [2]}, answer=[2, 2])
         _test_equation(equation="CEILING(a1, a2)", variables={"a1": [0.5], "a2": [1]}, answer=[1])
+        _test_equation(equation="IF(a1 <> a2, 1, 0)", variables={"a1": [3, 2], "a2": [3, 3]}, answer=[0, 1])
+        _test_equation(equation="IF(a1 <> a2, 1, 0)", variables={"a1": 4, "a2": 2}, answer=1)
+        _test_equation(equation="IF(a1 < a2, 1, 0)", variables={"a1": [1, 2], "a2": [0, 0]}, answer=[0, 0])
+        _test_equation(equation="IF(a1 < a2, 1, 0)", variables={"a1": 2, "a2": 3}, answer=1)
 
     def test_scientific_notation(self):
         _test_equation(equation="2e2", variables={"a1" : [1.1]}, answer=[200])

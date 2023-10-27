@@ -200,22 +200,6 @@ class TestOperators(unittest.TestCase):
         self.assertEqual(ret['result'], False)
         self.assertEqual(ret['error'], None)
 
-    def test_logic_tensor(self):
-        p = Parser(debug=True)
-        # Numbers
-        ret = p.parse('[3, 2] <> [3, 3]')
-        self.assertEqual(ret['result'], [False, True])
-        self.assertEqual(ret['error'], None)
-        ret = p.parse('4 <> 2')
-        self.assertEqual(ret['result'], True)
-        self.assertEqual(ret['error'], None)
-        ret = p.parse('[1, 2] > [0, 0]')
-        self.assertEqual(ret['result'], [True, True])
-        self.assertEqual(ret['error'], None)
-        ret = p.parse('2 < 3')
-        self.assertEqual(ret['result'], True)
-        self.assertEqual(ret['error'], None)
-
     def test_implicit_conversions_number(self):
         # Cell references will be blanks in this test
         # since we don't teach the parser how to get cells
