@@ -4,6 +4,7 @@ from hotxlfp import error
 import torch
 from hotxlfp import Parser
 from math import pi
+import numpy as np
 
 
 def _test_equation(
@@ -20,10 +21,13 @@ def _test_equation(
     except (error.XLError, TypeError):
         assert should_fail
         return
-    assert isinstance(result, torch.Tensor)
-    assert (
-        torch.abs(result - torch.tensor(answer)) < 0.000001
-    ).all(), f"{result} != {answer}"
+    if isinstance(result, np.ndarray):
+        assert (result == answer).all(), f"{result} != {answer}"
+    else:
+        assert isinstance(result, torch.Tensor)
+        assert (
+            torch.abs(result - torch.tensor(answer)) < 0.000001
+        ).all(), f"{result} != {answer}"
 
 
 class TestFormulaParser(unittest.TestCase):
@@ -347,7 +351,7 @@ class TestFormulaParser(unittest.TestCase):
         )
 
     def test_order_of_operations(self):
-        _test_equation(equation="2^-2-1", variables={"a1": [1]}, answer=[-.75])
+        _test_equation(equation="2^-2-1", variables={"a1": [1]}, answer=[-0.75])
         _test_equation(equation="(2^(-1))", variables={"a1": [1]}, answer=[0.5])
         _test_equation(equation="((2^(-1))-1)", variables={"a1": [1]}, answer=[-0.5])
         _test_equation(equation="2^2-1", variables={"a1": [1]}, answer=[3])
@@ -360,55 +364,116 @@ class TestFormulaParser(unittest.TestCase):
         _test_equation(equation="1 + 2 * 3 - 4", variables={"a1": [1]}, answer=[3])
 
     def test_if_statement_args(self):
-        _test_equation(equation="IF(a1 > 10, 1, 100, 400)", variables={"a1": [4]}, should_fail=True)
-        _test_equation(equation="IF(a1 > 10, 400)", variables={"a1": [4]}, should_fail=True)
-        _test_equation(equation="IF(a1 > 10, )", variables={"a1": [4]}, should_fail=True)
+        _test_equation(
+            equation="IF(a1 > 10, 1, 100, 400)", variables={"a1": [4]}, should_fail=True
+        )
+        _test_equation(
+            equation="IF(a1 > 10, 400)", variables={"a1": [4]}, should_fail=True
+        )
+        _test_equation(
+            equation="IF(a1 > 10, )", variables={"a1": [4]}, should_fail=True
+        )
         _test_equation(equation="IF(,, )", variables={"a1": [4]}, should_fail=True)
-        _test_equation(equation="IF(a1 > 100, 40, IF(a1 > 1, 4, 56))", variables={"a1": [40]}, answer=[4])
-        _test_equation(equation="IF(a1 > 10, 40, IF(a1 > 10, 4))", variables={"a1": [4]}, should_fail=True)
+        _test_equation(
+            equation="IF(a1 > 100, 40, IF(a1 > 1, 4, 56))",
+            variables={"a1": [40]},
+            answer=[4],
+        )
+        _test_equation(
+            equation="IF(a1 > 10, 40, IF(a1 > 10, 4))",
+            variables={"a1": [4]},
+            should_fail=True,
+        )
+        _test_equation(
+            equation="IF(a1 > 10, 'abc', 'def')", variables={"a1": [4]}, answer=["def"]
+        )
+        _test_equation(
+            equation="IF(a1 > 100, 'abc', IF(a1 > 1, 4, 56))",
+            variables={"a1": [40]},
+            answer=["4.0"],
+        )
 
     def test_tensors(self):
-        _test_equation(equation="MIN(a1 * 2, 2, 23, a1)", variables={"a1": [5]}, answer=[2])
+        _test_equation(
+            equation="MIN(a1 * 2, 2, 23, a1)", variables={"a1": [5]}, answer=[2]
+        )
         _test_equation(equation="MIN(2, a1 * 2)", variables={"a1": [5]}, answer=[2])
         _test_equation(equation="MAX(a1 * 2, 2)", variables={"a1": [5]}, answer=[10])
         _test_equation(equation="MAX(2, a1 * 2)", variables={"a1": [5]}, answer=[10])
-        _test_equation(equation="MAX(MAX(2, a1 * 2), 100)", variables={"a1": [5, 4]}, answer=[100, 100])
+        _test_equation(
+            equation="MAX(MAX(2, a1 * 2), 100)",
+            variables={"a1": [5, 4]},
+            answer=[100, 100],
+        )
         _test_equation(equation="5", variables={"a1": [5, 4]}, answer=[5])
         _test_equation(equation="SQRT(100)", variables={"a1": [5]}, answer=[10])
-        _test_equation(equation="CEILING(a1)", variables={"a1": [4.5, -1.2]}, answer=[5, -1])
-        _test_equation(equation="CEILING(a1, a2)", variables={"a1": [0.5, 0.5], "a2": [1, 2]}, answer=[1, 2])
-        _test_equation(equation="CEILING(a1, a2)", variables={"a1": [0.5, 0.5], "a2": [2]}, answer=[2, 2])
-        _test_equation(equation="CEILING(a1, a2)", variables={"a1": [0.5], "a2": [1]}, answer=[1])
-        _test_equation(equation="IF(a1 <> a2, 1, 0)", variables={"a1": [3, 2], "a2": [3, 3]}, answer=[0, 1])
-        _test_equation(equation="IF(a1 <> a2, 1, 0)", variables={"a1": 4, "a2": 2}, answer=1)
-        _test_equation(equation="IF(a1 < a2, 1, 0)", variables={"a1": [1, 2], "a2": [0, 0]}, answer=[0, 0])
-        _test_equation(equation="IF(a1 < a2, 1, 0)", variables={"a1": 2, "a2": 3}, answer=1)
+        _test_equation(
+            equation="CEILING(a1)", variables={"a1": [4.5, -1.2]}, answer=[5, -1]
+        )
+        _test_equation(
+            equation="CEILING(a1, a2)",
+            variables={"a1": [0.5, 0.5], "a2": [1, 2]},
+            answer=[1, 2],
+        )
+        _test_equation(
+            equation="CEILING(a1, a2)",
+            variables={"a1": [0.5, 0.5], "a2": [2]},
+            answer=[2, 2],
+        )
+        _test_equation(
+            equation="CEILING(a1, a2)", variables={"a1": [0.5], "a2": [1]}, answer=[1]
+        )
+        _test_equation(
+            equation="IF(a1 <> a2, 1, 0)",
+            variables={"a1": [3, 2], "a2": [3, 3]},
+            answer=[0, 1],
+        )
+        _test_equation(
+            equation="IF(a1 <> a2, 1, 0)", variables={"a1": 4, "a2": 2}, answer=1
+        )
+        _test_equation(
+            equation="IF(a1 < a2, 1, 0)",
+            variables={"a1": [1, 2], "a2": [0, 0]},
+            answer=[0, 0],
+        )
+        _test_equation(
+            equation="IF(a1 < a2, 1, 0)", variables={"a1": 2, "a2": 3}, answer=1
+        )
 
     def test_scientific_notation(self):
-        _test_equation(equation="2e2", variables={"a1" : [1.1]}, answer=[200])
-        _test_equation(equation="5(m)", variables={"m" : [10]}, answer=[50])
-        _test_equation(equation="5(e)", variables={"e" : [10]}, answer=[50])
-        _test_equation(equation="5(evar)", variables={"evar" : [10]}, answer=[50])
-        _test_equation(equation="5(vare)", variables={"vare" : [10]}, answer=[50])
-        _test_equation(equation="1 e 2", variables={"a1" : [1.1]}, answer=[100])
-        _test_equation(equation="1e2", variables={"a1" : [1.1]}, answer=[100])
-        _test_equation(equation="2*1e2", variables={"a1" : [1.1]}, answer=[200])
-        _test_equation(equation="2*1e2^3", variables={"a1" : [1.1]}, answer=[2000000])
-        _test_equation(equation="(2*1e2)^3", variables={"a1" : [1.1]}, answer=[8000000])
-        _test_equation(equation="(2)e(4)", variables={"a1" : [1.1]}, answer=[8000000], should_fail=True)
-        _test_equation(equation="(2)e(4)", variables={"a1" : [1.1]}, should_fail=True)
-        _test_equation(equation="0.2e2", variables={"a1" : [1.1]}, answer=20)
-        _test_equation(equation="0.2e0.2", variables={"a1" : [1.1]}, answer=0.2 * (10 ** 0.2))
-        _test_equation(equation="2e-1", variables={"a1" : [1.1]}, answer=0.2)
-        _test_equation(equation="-2e1", variables={"a1" : [1.1]}, answer=-20)
-        _test_equation(equation="-2e-1", variables={"a1" : [1.1]}, answer=-0.2)
-        _test_equation(equation="-2e-.1", variables={"a1" : [1.1]}, answer=-2 * (10 ** (-.1)))
+        _test_equation(equation="2e2", variables={"a1": [1.1]}, answer=[200])
+        _test_equation(equation="5(m)", variables={"m": [10]}, answer=[50])
+        _test_equation(equation="5(e)", variables={"e": [10]}, answer=[50])
+        _test_equation(equation="5(evar)", variables={"evar": [10]}, answer=[50])
+        _test_equation(equation="5(vare)", variables={"vare": [10]}, answer=[50])
+        _test_equation(equation="1 e 2", variables={"a1": [1.1]}, answer=[100])
+        _test_equation(equation="1e2", variables={"a1": [1.1]}, answer=[100])
+        _test_equation(equation="2*1e2", variables={"a1": [1.1]}, answer=[200])
+        _test_equation(equation="2*1e2^3", variables={"a1": [1.1]}, answer=[2000000])
+        _test_equation(equation="(2*1e2)^3", variables={"a1": [1.1]}, answer=[8000000])
+        _test_equation(
+            equation="(2)e(4)",
+            variables={"a1": [1.1]},
+            answer=[8000000],
+            should_fail=True,
+        )
+        _test_equation(equation="(2)e(4)", variables={"a1": [1.1]}, should_fail=True)
+        _test_equation(equation="0.2e2", variables={"a1": [1.1]}, answer=20)
+        _test_equation(
+            equation="0.2e0.2", variables={"a1": [1.1]}, answer=0.2 * (10**0.2)
+        )
+        _test_equation(equation="2e-1", variables={"a1": [1.1]}, answer=0.2)
+        _test_equation(equation="-2e1", variables={"a1": [1.1]}, answer=-20)
+        _test_equation(equation="-2e-1", variables={"a1": [1.1]}, answer=-0.2)
+        _test_equation(
+            equation="-2e-.1", variables={"a1": [1.1]}, answer=-2 * (10 ** (-0.1))
+        )
 
+        _test_equation(equation="2E2", variables={"a1": [1.1]}, answer=[200])
+        _test_equation(equation="2*1E2", variables={"a1": [1.1]}, answer=[200])
+        _test_equation(equation="0.2E2", variables={"a1": [1.1]}, answer=20)
+        _test_equation(equation="-2E-1", variables={"a1": [1.1]}, answer=-0.2)
 
-        _test_equation(equation="2E2", variables={"a1" : [1.1]}, answer=[200])
-        _test_equation(equation="2*1E2", variables={"a1" : [1.1]}, answer=[200])
-        _test_equation(equation="0.2E2", variables={"a1" : [1.1]}, answer=20)
-        _test_equation(equation="-2E-1", variables={"a1" : [1.1]}, answer=-0.2)
 
 if __name__ == "__main__":
     unittest.main()
